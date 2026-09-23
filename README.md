@@ -80,6 +80,8 @@ With a suitable model, send an explicit `type: "multimodal"` object as `state`. 
 
 For example, `base64 -w0 picture.png` yields the image payload on GNU/Linux. This adapter takes inline bytes only; it does not fetch remote URLs or read server-side files. Requests are capped at 64 MiB, with at most 8 media parts, 32 MiB per part and 48 MiB decoded media total. PDF is not a native llama.cpp media input: extract text or render pages as images first. The actual formats depend on the model and llama-server build; llama.cpp documents images, audio and video input through its [server API](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md).
 
+Video decoding also requires `ffmpeg` and `ffprobe` on the llama-server host's `PATH`, or a configured `--video-ffmpeg-dir`. Check with `command -v ffmpeg && command -v ffprobe` before trying `input_video`. A model reporting `modalities.video: true` in `/props` does not establish that those executables are installed. They were not on the PATH of the machine used to develop this adapter; image and audio input can still work without them when the model supports those modalities.
+
 The adapter reads llama-server's current media marker and capabilities from `GET /props`, inserts one marker per media part in the question prompt, then sends the rendered prompt and ordered base64 bytes to `/completion` as `prompt_string` plus `multimodal_data`. llama.cpp handles media decoding and inference. Actual multimodal input token counts come from llama-server's `tokens_evaluated` response. Increase `-max-prompt-tokens` for media-heavy inputs; the server context window must also fit them. For text-only state, the original token-ID path is unchanged.
 
 ## Scoring details
