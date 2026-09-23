@@ -1,0 +1,4 @@
+/semif-go
+*.test
+*.log
+.env
