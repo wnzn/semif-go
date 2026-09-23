@@ -33,6 +33,8 @@ llama-server \
 
 For a model that needs a multimodal projector, add `--mmproj /path/to/mmproj.gguf`. Check the loaded model's capabilities with `curl -sS http://127.0.0.1:8080/props`; the `modalities` object reports `vision`, `audio`, and `video`. See the [llama.cpp multimodal guide](https://github.com/ggml-org/llama.cpp/blob/master/docs/multimodal.md).
 
+**Gemma 4 12B image note:** A 1,104-token image caused our llama-server build to abort with `non-causal attention requires n_ubatch >= n_tokens` at the default 512-token micro-batch size. For larger images, we successfully reran it with `--batch-size 2048 --ubatch-size 2048` added to the llama-server command. Pick a size that fits your hardware and exceeds the model's image-token batch; this is a llama.cpp setting, not a Go adapter flag.
+
 In this repository, run the adapter on a different port:
 
 ```sh
